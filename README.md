@@ -1,2 +1,2 @@
 ### Entity Relationship Diagram
-![ER Diagram](./public/images/ERDiagram.jpeg)
+![ER Diagram](./public/images/ERDiagram.png)
