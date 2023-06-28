@@ -8,7 +8,7 @@ routes
   .post('/Login', async (req, res) => {
     try {
       const user = await Users.login(req.body.userid, req.body.password);
-      res.send({...user, password: undefined});
+      res.send({...user});
     } catch(error) {
       res.status(401).send({ message: error.message });
     }
@@ -17,7 +17,7 @@ routes
   .post('/Register', async (req, res) => {
     try {
       const user = await Users.register(req.body.userid, req.body.password, req.body.email,req.body.dateofbirth);
-      res.send({...user, password: undefined});
+      res.send({...user});
     } catch(error) {
       res.status(401).send({ message: error.message }); 
     }
