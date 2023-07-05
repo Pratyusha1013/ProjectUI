@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema({
   userid:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users',
-    required: true,
+    required: false,
     autopopulate: true
     }
 });

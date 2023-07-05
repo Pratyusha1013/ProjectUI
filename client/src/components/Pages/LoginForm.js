@@ -1,35 +1,28 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { fetchData } from '../../main.js';
+
 const LoginForm = () => {
   const [userid, setUserId] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-        const response = await fetch('/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            userid: userid,
-            password: password
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error('Login failed');
-        }
-  
-        const data = await response.json();
-        console.log('Login successful:', data);
-  
-      } 
-      catch (error) 
-      {
-        console.error('Login error:', error.message);
-      }
+      const data = {
+        userid: userid,
+        password: password,
+      };
+
+      const response = await fetchData('/user/login', data, 'POST');
+      console.log('Login successful:', response);
+      navigate('/profile');
+
+    } catch (error) {
+      console.error('Login error:', error.message);
+    }
   };
 
   return (
@@ -37,7 +30,7 @@ const LoginForm = () => {
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="userid">User ID:</label>
+          <label htmlFor="userId">User ID:</label>
           <input
             type="text"
             id="userid"
@@ -63,5 +56,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-
-

@@ -1,41 +1,38 @@
+import React, { useState, useContext } from 'react';
+import { fetchData } from '../../main.js';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../Pages/UserContext.js';
 
-
-import React, { useState } from 'react';
 
 const RegisterForm = () => {
   const [userid, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dateofbirth, setDateOfBirth] = useState('');
 
-  const handleSubmit =async (e) => {
+  const { updateUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-        const response = await fetch('/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            userid: userid,
-            password: password,
-            email: email,
-            dateofbirth: dateOfBirth
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error('Registration failed');
-        }
-  
-        const data = await response.json();
-        console.log('Registration successful:', data);
-        
-  
-      } catch (error) {
-        console.error('Registration error:', error.message);        
+      const data = {
+        userid: userid,
+        password: password,
+        email: email,
+        dateofbirth: dateofbirth,
+      };
+
+      const response = await fetchData('/user/register', data, 'POST');
+
+      if (!response.message) {
+        updateUser('authenticated', true);
+        navigate('/Profile'); 
       }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -73,21 +70,19 @@ const RegisterForm = () => {
           />
         </div>
         <div>
-          <label htmlFor="dateOfBirth">Date of Birth:</label>
+          <label htmlFor="dateofbirth">Date of Birth:</label>
           <input
             type="date"
             id="dateOfBirth"
-            value={dateOfBirth}
+            value={dateofbirth}
             onChange={(e) => setDateOfBirth(e.target.value)}
             required
           />
         </div>
-        <input type="submit" className="btn btn-primary" value="Register"/>
+        <input type="submit" className="btn btn-primary" value="Register" />
       </form>
     </div>
   );
 };
 
 export default RegisterForm;
-
-
