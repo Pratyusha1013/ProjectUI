@@ -58,7 +58,7 @@ const PostForm = () => {
         location: location,
       };
 
-      const response = await fetchData('/post/create', data, 'POST');
+      const response = await fetchData('/post/Create', data, 'POST');
 
       if (!response.message) {
         console.log(newPost);

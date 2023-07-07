@@ -8,6 +8,8 @@ routes
   .post('/Login', async (req, res) => {
     try {
       const user = await Users.login(req.body.userid, req.body.password);
+      console.log(userid);
+      console.log(password);
       res.send({...user});
     } catch(error) {
       res.status(401).send({ message: error.message });

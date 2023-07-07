@@ -6,13 +6,12 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
     userid: '', 
     password:'',
-    email:'',
-    dateOfBirth:'',
     authenticated: false, 
   });
 
-  const updateUser = (id, value) => {
-    setUser(prevUser => ({ ...prevUser, [id]: value }));
+     
+  const updateUser = (name, value) => {
+    setUser(prevUser => ({ ...prevUser, [name]: value }));
   };
 
   return (

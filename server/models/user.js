@@ -44,5 +44,5 @@ async function deleteuser(id) {
 };
 
 module.exports = { 
-  register, login, updatepassword, deleteuser 
+  register, Users, login, updatepassword, deleteuser 
 };

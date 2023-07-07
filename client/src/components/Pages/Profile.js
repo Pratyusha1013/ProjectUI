@@ -1,24 +1,23 @@
-import React, { useContext, useState } from 'react';
-import {UserContext} from '../Pages/UserContext.js'; 
+import React, { useContext, useState, useEffect } from 'react';
+import { UserContext } from '../Pages/UserContext.js';
+import { fetchData } from '../../main.js';
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
-  const { user } = useContext(UserContext); 
-  const [posts, setPosts] = useState([]); 
-  const [newPost, setNewPost] = useState(''); 
-  
-  const handlePostSubmit = (e) => {
-    e.preventDefault();
+  const { user } = useContext(UserContext);
+  const [posts, setPosts] = useState([]);
 
-    const post = {
-      id: posts.length + 1, 
-      content: newPost,
-    };
+  useEffect(() => {
+    fetchData('/post/Read', { userid: user.userid }, 'POST')
+      .then((data) => {
+        
+        setPosts(data);
 
-    
-    setPosts([...posts, post]);
-
-    setNewPost('');
-  };
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [user.userid]);
 
   return (
     <div>
@@ -30,21 +29,13 @@ const Profile = () => {
       ) : (
         <ul>
           {posts.map((post) => (
-            <li key={post.id}>{post.content}</li>
+            <li key={post.id}>{post.text}</li>
           ))}
         </ul>
       )}
 
-      <h2>Create a New Post:</h2>
-      <form onSubmit={handlePostSubmit}>
-        <textarea
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          placeholder="Enter your post"
-          required
-        ></textarea>
-        <button type="submit">Post</button>
-      </form>
+      <h2>Create a New Post</h2>
+      <Link to="/Post">Create a new post.</Link>
     </div>
   );
 };

@@ -1,60 +1,76 @@
-
 const mongoose = require("mongoose");
+const { Users } = require("./user");
 
 const postSchema = new mongoose.Schema({
-  text: { type: String, required: true},
-  date: { type: Date, required: true},
-  location: {type: String, required: true},
-  userid:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users',
+  text: { type: String, required: true },
+  date: { type: Date, required: true },
+  location: { type: String, required: true },
+  userid: {
+    type: String,
+    ref: "User",
     required: false,
-    autopopulate: true
-    }
+    autopopulate: true,
+  },
 });
 
-const Posts = mongoose.model('Post', postSchema);
-let count=0;
+const Posts = mongoose.model("Post", postSchema);
+
+
 async function create(userid, text, location) {
   const newPost = await Posts.create({
     userid: userid,
     text: text,
     date: new Date().toISOString(),
-    location: location
+    location: location,
   });
   return newPost;
 }
 
-async function update( id, userid, text) {
-  const post = await Posts.findById({ "_id": id });
-  if(!post) throw Error("Post is not available");
-  const filter={"_id":id};
-  const update={
-        text : text,
-        date: new Date().toISOString(),
-        userid: userid
-    }
-  const updates = await Posts.findOneAndUpdate(filter,update);
-  return updates;
+async function update(id, userid, text) {
+  const user = await Users.findOne({ userid: userid });
+  if (!user) throw Error("User Does not Exist");
+
+  const post = await Posts.findById(id);
+  if (!post) throw Error("Post is not available");
+  if (post.userid !== userid) throw Error("This user cannot update the post");
+
+  post.text = text;
+  post.date = new Date().toISOString();
+  const updatedPost = await post.save();
+  return updatedPost;
 }
 
-async function read(id,userid) {
-  const post = await Posts.findById({ "_id": id });
-  if(!post) throw Error("Post is not available");
-  if(Posts.userid!=userid)
-  {
-    count++;
+async function read(userid) {
+  const user = await Users.findOne({ userid: userid });
+  if (!user) throw Error("User Does not Exist");
+
+  try {
+    const posts = await Posts.find({ userid });
+    return posts;
+  } 
+  catch (error) {
+    
+    console.error('Error retrieving posts:', error);
+    throw error;
   }
-  return post;
 }
 
-async function deletes(id, userid){
-  if(Posts.userid!=userid) throw Error ("This user cannot delete the post");
-  const remove= await Posts.findByIdAndDelete({"_id": id});
-  if(!remove) throw Error("Post is not available");
-  return remove;
-};
 
-module.exports = { 
-  create, update, read, deletes
+async function deletes(id, userid) {
+  const user = await Users.findOne({ userid: userid });
+  if (!user) throw Error("User Does not Exist");
+
+  const post = await Posts.findById(id);
+  if (!post) throw Error("Post is not available");
+  if (post.userid !== userid) throw Error("This user cannot delete the post");
+
+  const removedPost = await Posts.findByIdAndDelete(id);
+  return removedPost;
+}
+
+module.exports = {
+  create,
+  update,
+  read,
+  deletes,
 };
